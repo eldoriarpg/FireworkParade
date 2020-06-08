@@ -1,0 +1,106 @@
+rockets:
+  testrocket:
+    name: testrocket
+    cooldown: 3
+    stages:
+      20:
+        1:
+          # Define height
+          height: 65
+          image:
+            # file of image
+            file: file.png
+        2:
+          height: 60
+          burst:
+            # defines in which direction the burst should explode from the center
+            burstDirection: outside
+            # define the spread
+            spread: 4
+            # colors of the firework
+            color:
+              - red
+              - blue
+            # fade colors of the firework
+            fade:
+              - fuchsia
+              - green
+            flicker: true
+            spawn:
+              type: cycle
+              count: 25
+              radius: 25
+
+types:
+  # displays a image in the sky
+  image:
+    # file of image
+    file: file.png
+  # let firework rain and split
+  rain:
+    # In how much pieces a rain firework should split
+    splits: 2
+    # how often a piece should split
+    splitTimes: 4
+    # how much force should them seperate
+    spread: 2
+    # every ricks they should split
+    ticks: 20
+    # defines the position where the firework should spawn
+    spawn:
+      # spawn the firework in the center
+      type: center
+  # burst firework
+  burst:
+    # defines in which direction the burst should explode from the center
+    burstDirection:
+    # define the spread
+    spread: 2
+    # colors of the firework
+    color:
+      - red
+      - blue
+    # fade colors of the firework
+    fade: green,pink
+    flicker: true
+    power: 1
+    spawn:
+      type: cycle
+      count: 25
+      radius: 25
+  ball:
+    color: red,blue
+    fade: green,pink
+    flicker: false
+    power: 2
+    spawn:
+      type: random_square
+      count: 25
+      radius: 25
+  ballLarge:
+    color: red,blue
+    fade: green,pink
+    flicker: false
+    power: 2
+    spawn:
+      type: random_square
+      count: 25
+      radius: 25
+  creeper:
+    color: red,blue
+    fade: green,pink
+    flicker: false
+    power: 2
+    spawn:
+      type: random_square
+      count: 25
+      radius: 25
+  star:
+    color: red,blue
+    fade: green,pink
+    flicker: false
+    power: 2
+    spawn:
+      type: random_square
+      count: 25
+      radius: 25

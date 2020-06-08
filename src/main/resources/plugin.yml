@@ -1,0 +1,9 @@
+name: FireworkFun
+main: de.eldoria.fireworkfun.FireworkFun
+version: 1.0-BETA
+api-version: 1.13
+commands:
+  fireworkfun:
+    usage: <firework name>
+    description: Get a defined firework
+    permission: fireworkfun.give
