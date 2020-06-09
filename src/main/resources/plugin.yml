@@ -1,5 +1,5 @@
-name: FireworkFun
-main: de.eldoria.fireworkfun.FireworkFun
+name: FireworkParade
+main: de.eldoria.fireworkfun.FireworkParade
 version: 1.0-BETA
 api-version: 1.13
 commands:
