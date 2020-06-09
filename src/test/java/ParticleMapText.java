@@ -1,4 +1,4 @@
-import de.eldoria.fireworkfun.listener.ParticleMap;
+import de.eldoria.fireworkparade.listener.ParticleMap;
 import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
