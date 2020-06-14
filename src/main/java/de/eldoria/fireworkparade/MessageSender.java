@@ -62,4 +62,16 @@ public final class MessageSender {
         TextComponent finalText = TextComponent.builder().append(prefix).append(message).build();
         TextAdapter.sendMessage(player, finalText);
     }
+
+    public static void sendTextComponents(Player p, TextComponent... components) {
+        TextComponent prefix = TextComponent.builder()
+                .color(TextColor.GOLD)
+                .content("[FP] ")
+                .build();
+        TextComponent.Builder builder = TextComponent.builder().append(prefix);
+        for (TextComponent component : components) {
+            builder.append(component);
+        }
+        TextAdapter.sendMessage(p, builder.build());
+    }
 }

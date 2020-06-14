@@ -36,7 +36,7 @@ public class RocketStage implements ConfigurationSerializable {
 
     public void schedule(Location loc) {
         for (Rocket rocket : rockets) {
-            Bukkit.getScheduler().runTaskLater(FireworkParade.getInstance(), () -> rocket.detonate(loc.clone()), ticks);
+            rocket.detonate(ticks, loc.clone());
         }
     }
 
@@ -60,4 +60,7 @@ public class RocketStage implements ConfigurationSerializable {
         return new RocketStage(rockets, tick);
     }
 
+    public void removeRocket(int id) {
+        rockets.remove(id);
+    }
 }

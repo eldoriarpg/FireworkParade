@@ -1,7 +1,6 @@
 package de.eldoria.fireworkparade.rocket.rocketspawns;
 
 
-import de.eldoria.fireworkparade.rocket.rockettypes.BurstDirection;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;

@@ -1,9 +1,9 @@
 package de.eldoria.fireworkparade.rocket.rocketspawns;
 
+import de.eldoria.fireworkparade.util.C;
 import de.eldoria.fireworkparade.util.SerializationUtil;
 import de.eldoria.fireworkparade.util.TypeResolvingMap;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @SerializableAs("radiusSpawn")
-public class RadiusSpawn implements RocketSpawn {
+public final class RadiusSpawn implements RocketSpawn {
     private final SpawnForm spawnForm;
     private final int count;
     private final int radius;
@@ -27,10 +27,10 @@ public class RadiusSpawn implements RocketSpawn {
     }
 
     @Override
-    public List<Vector> getSpawnPoints() {
-        List<Vector> vectors = new ArrayList<>();
+    public List<SpawnData> getSpawnPoints() {
+        List<SpawnData> vectors = new ArrayList<>();
         for (int point = 0; point < count; point++) {
-            vectors.add(spawnForm.getSpawnPosition(count, point, radius));
+            vectors.add(new SpawnData(spawnForm.getSpawnPosition(count, point, radius), 0));
         }
         return vectors;
     }
@@ -55,5 +55,12 @@ public class RadiusSpawn implements RocketSpawn {
         int count = resolvingMap.getValue("count");
         int radius = resolvingMap.getValue("radius");
         return new RadiusSpawn(type, count, radius);
+    }
+
+    @Override
+    public String toString() {
+        return "Radius spawn: " + spawnForm + C.NEW_LINE
+                + "Radius: " + radius + C.NEW_LINE
+                + "Rocket Count: " + count;
     }
 }

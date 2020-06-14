@@ -1,6 +1,11 @@
 package de.eldoria.fireworkparade.rocket.rockettypes;
 
+import de.eldoria.fireworkparade.FireworkParade;
+import de.eldoria.fireworkparade.rocket.RocketType;
 import de.eldoria.fireworkparade.rocket.rocketspawns.RocketSpawn;
+import de.eldoria.fireworkparade.rocket.rocketspawns.SpawnData;
+import de.eldoria.fireworkparade.util.C;
+import de.eldoria.fireworkparade.util.ColorUtil;
 import de.eldoria.fireworkparade.util.SerializationUtil;
 import de.eldoria.fireworkparade.util.TypeResolvingMap;
 import lombok.Getter;
@@ -8,13 +13,13 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.entity.Firework;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @SerializableAs("coloredRocket")
@@ -25,7 +30,7 @@ public class ColoredRocket extends UncoloredRocket {
     private final FireworkEffect.Type type;
 
     protected ColoredRocket(int height, Color[] colors, Color[] fade, boolean flicker, RocketSpawn spawn, FireworkEffect.Type type) {
-        super(height, spawn);
+        super(height, spawn, RocketType.wrap(type));
         this.colors = colors;
         this.fade = fade;
         this.flicker = flicker;
@@ -48,9 +53,11 @@ public class ColoredRocket extends UncoloredRocket {
         return new ColoredRocket(height, colors, fade, flicker, spawn, FireworkEffect.Type.STAR);
     }
 
-    protected void buildEffectAndDetonate(Firework firework) {
-        FireworkMeta meta = firework.getFireworkMeta();
+    protected void buildEffectAndSchedule(int tick, Location spawn) {
+        buildEffectAndSchedule(tick, spawn, new Vector());
+    }
 
+    protected void buildEffectAndSchedule(int tick, Location location, Vector velocity) {
         FireworkEffect effect = FireworkEffect.builder()
                 .with(type)
                 .withColor(getColors())
@@ -58,9 +65,7 @@ public class ColoredRocket extends UncoloredRocket {
                 .flicker(isFlicker())
                 .build();
 
-        meta.addEffect(effect);
-        firework.setFireworkMeta(meta);
-        firework.detonate();
+        FireworkParade.getScheduler().scheduleRocket(tick, location, velocity, effect);
     }
 
     @NotNull
@@ -88,10 +93,18 @@ public class ColoredRocket extends UncoloredRocket {
     }
 
     @Override
-    public void detonate(Location location) {
-        for (Vector spawnPoint : getRocketSpawn().getSpawnPoints()) {
-            Location spawn = location.clone().add(spawnPoint).add(0, getHeight(), 0);
-            buildEffectAndDetonate(spawnFirework(spawn));
+    public void detonate(int tick, Location location) {
+        for (SpawnData spawnPoint : getRocketSpawn().getSpawnPoints()) {
+            Location spawn = location.clone().add(spawnPoint.getPosition()).add(0, getHeight(), 0);
+            buildEffectAndSchedule(tick + spawnPoint.getTickDelay(), spawn);
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Colors: " + Arrays.stream(colors).map(ColorUtil::colorToString).collect(Collectors.joining(",")) + C.NEW_LINE
+                + "Fade Colors: " + Arrays.stream(fade).map(ColorUtil::colorToString).collect(Collectors.joining(",")) + C.NEW_LINE
+                + "Flicker: " + flicker + C.NEW_LINE
+                + getRocketSpawn().toString();
     }
 }

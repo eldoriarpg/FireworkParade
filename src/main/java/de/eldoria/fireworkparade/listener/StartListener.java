@@ -19,7 +19,7 @@ public class StartListener implements Listener {
 
     private final Plugin plugin;
     private ImageLib imageLib;
-    private StoryboardLib storyboardLib;
+    private final StoryboardLib storyboardLib;
 
     public StartListener(StoryboardLib storyboardLib, Plugin plugin) {
         this.plugin = plugin;
@@ -47,9 +47,9 @@ public class StartListener implements Listener {
 
         if (item.getItemMeta() == null) return;
         ItemMeta itemMeta = item.getItemMeta();
-        if (itemMeta == null || !itemMeta.hasDisplayName() || !itemMeta.hasLore()) return;
+        if (itemMeta == null || !itemMeta.hasDisplayName() || !itemMeta.hasLore() || itemMeta.getLore().isEmpty()) return;
 
-        String displayName = itemMeta.getDisplayName();
+        String displayName = itemMeta.getDisplayName().replace(" ", "_");
         List<String> lore = itemMeta.getLore();
 
         RocketStoryboard storyboard = storyboardLib.getStoryboard(displayName);

@@ -21,7 +21,7 @@ public class RocketStoryboard implements ConfigurationSerializable {
     private final List<RocketStage> stages;
 
     private RocketStoryboard(String name, double cooldown, List<RocketStage> stages) {
-        this.name = name;
+        this.name = name.replace("$", "§");
         this.cooldown = cooldown;
         this.stages = stages;
     }

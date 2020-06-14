@@ -1,6 +1,8 @@
 package de.eldoria.fireworkparade;
 
+import de.eldoria.fireworkparade.commands.CreateFireworkCommand;
 import de.eldoria.fireworkparade.commands.FireworkCommand;
+import de.eldoria.fireworkparade.listener.FireworkScheduler;
 import de.eldoria.fireworkparade.listener.ImageLib;
 import de.eldoria.fireworkparade.listener.StartListener;
 import de.eldoria.fireworkparade.listener.StoryboardLib;
@@ -21,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class FireworkParade extends JavaPlugin {
     private static FireworkParade instance;
     private StoryboardLib storyboardLib;
+    private static FireworkScheduler scheduler;
     private static ImageLib imageLib;
 
     public static ImageLib getImageLib() {
@@ -31,10 +34,15 @@ public class FireworkParade extends JavaPlugin {
         return instance;
     }
 
+    public static FireworkScheduler getScheduler() {
+        return scheduler;
+    }
+
     @Override
     public void onEnable() {
         instance = this;
         imageLib = new ImageLib(this);
+        scheduler = new FireworkScheduler(this);
 
         ConfigurationSerialization.registerClass(RocketStoryboard.class, "storyboard");
         ConfigurationSerialization.registerClass(RocketStage.class, "stage");
@@ -46,7 +54,8 @@ public class FireworkParade extends JavaPlugin {
 
         saveDefaultConfig();
         storyboardLib = new StoryboardLib(this, imageLib);
-        getCommand("fireworkfun").setExecutor(new FireworkCommand(storyboardLib));
+        getCommand("fireworkparade").setExecutor(new FireworkCommand(storyboardLib));
+        getCommand("fireworkcreator").setExecutor(new CreateFireworkCommand(storyboardLib));
         Bukkit.getPluginManager().registerEvents(new StartListener(storyboardLib, this), this);
 
         //generateExampleRocket();

@@ -32,6 +32,12 @@ public class ImageMapper {
             return null;
         }
 
+        plugin.getLogger().info("Loading " + file.getName() + ".");
+
+        if (read == null) {
+            plugin.getLogger().warning("File " + file.getName() + " is not a image.");
+            return null;
+        }
 
         Color[][] colors = new Color[read.getWidth()][read.getHeight()];
         for (int width = 0; width < read.getWidth(); width++) {

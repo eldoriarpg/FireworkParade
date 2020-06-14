@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class StoryboardLib {
 
@@ -26,7 +27,12 @@ public class StoryboardLib {
     }
 
     public void addStoryboard(RocketStoryboard storyboard) {
-        storyboards.put(storyboard.getName(), storyboard);
+        storyboards.put(stripColorCodes(storyboard.getName()), storyboard);
+    }
+
+    public void removeStoryboard(RocketStoryboard storyboard) {
+        storyboards.remove(stripColorCodes(storyboard.getName()));
+        storyboards.remove(storyboard.getName());
     }
 
     public void load() {
@@ -38,7 +44,7 @@ public class StoryboardLib {
             return;
         }
         for (RocketStoryboard storyboard : storyboards) {
-            this.storyboards.put(storyboard.getName(), storyboard);
+            this.storyboards.put(stripColorCodes(storyboard.getName()), storyboard);
         }
     }
 
@@ -48,7 +54,7 @@ public class StoryboardLib {
     }
 
     public RocketStoryboard getStoryboard(String name) {
-        return storyboards.get(name);
+        return storyboards.getOrDefault(name, storyboards.get(stripColorCodes(name)));
     }
 
     private Color getColor(String value) {
@@ -61,6 +67,21 @@ public class StoryboardLib {
     }
 
     public boolean exists(String name) {
-        return storyboards.containsKey(name);
+        return getStoryboard(name) != null;
+    }
+
+    public List<String> getMatchingStoryboard(String value) {
+        if (value.isEmpty()) {
+            return storyboards.keySet().stream()
+                    .map(this::stripColorCodes).collect(Collectors.toList());
+        }
+        return storyboards.keySet().stream()
+                .filter(string -> string.toLowerCase().startsWith(value.toLowerCase())
+                        || stripColorCodes(string).startsWith(value.toLowerCase()))
+                .map(this::stripColorCodes).collect(Collectors.toList());
+    }
+
+    private String stripColorCodes(String s) {
+        return s.replaceAll("[$§].", "");
     }
 }

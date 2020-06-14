@@ -1,6 +1,5 @@
 package de.eldoria.fireworkparade.rocket;
 
-import de.eldoria.fireworkparade.rocket.rocketspawns.SpawnForm;
 import org.bukkit.FireworkEffect;
 
 import java.util.Arrays;
@@ -25,6 +24,23 @@ public enum RocketType {
     RocketType(String configName, FireworkEffect.Type type) {
         this.configName = configName;
         form = type;
+    }
+
+    public static RocketType wrap(FireworkEffect.Type type) {
+        switch (type) {
+            case BALL:
+                return BALL;
+            case BALL_LARGE:
+                return BALL_LARGE;
+            case STAR:
+                return STAR;
+            case BURST:
+                return BURST;
+            case CREEPER:
+                return CREEPER;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
     }
 
     /**

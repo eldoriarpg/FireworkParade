@@ -2,6 +2,8 @@ package de.eldoria.fireworkparade.rocket.rockettypes;
 
 import de.eldoria.fireworkparade.rocket.rocketspawns.RocketSpawn;
 import de.eldoria.fireworkparade.rocket.rocketspawns.SingleSpawn;
+import de.eldoria.fireworkparade.rocket.rocketspawns.SpawnData;
+import de.eldoria.fireworkparade.util.C;
 import de.eldoria.fireworkparade.util.SerializationUtil;
 import de.eldoria.fireworkparade.util.TypeResolvingMap;
 import lombok.Getter;
@@ -9,7 +11,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.entity.Firework;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,34 +35,37 @@ public class BurstRocket extends ColoredRocket {
     }
 
     @Override
-    public void detonate(Location location) {
+    public void detonate(int tick, Location location) {
         // Get the points where the rockets should be spawned
-        List<Vector> spawnPoints = getRocketSpawn().getSpawnPoints();
-        for (Vector spawnPoint : spawnPoints) {
+        List<SpawnData> spawnPoints = getRocketSpawn().getSpawnPoints();
+        for (SpawnData spawnPoint : spawnPoints) {
             // Spawn a new firework at spawn location and height
-            Firework firework = spawnFirework(location.clone().add(spawnPoint).add(0, getHeight(), 0));
+            Location spawn = location.clone().add(spawnPoint.getPosition()).add(0, getHeight(), 0);
             // set burst direction
             BurstDirection direction = getDirection();
+            Vector velocity;
             if (!(getRocketSpawn() instanceof SingleSpawn)) {
-                firework.setVelocity(direction.getDirectionVector(spawnPoint).multiply(getSpread()));
+                velocity = direction.getDirectionVector(spawnPoint.getPosition()).multiply(getSpread());
             } else {
                 switch (direction) {
                     case INSIDE:
                     case FUZZY_INSIDE:
                     case OUTSIDE:
                     case FUZZY_OUTSIDE:
-                        firework.setVelocity(BurstDirection.RANDOM.getDirectionVector(spawnPoint).multiply(getSpread()));
+                        velocity = BurstDirection.RANDOM.getDirectionVector(spawnPoint.getPosition()).multiply(getSpread());
                         break;
                     case DOWN:
                     case FUZZY_DOWN:
                     case UP:
                     case FUZZY_UP:
                     case RANDOM:
-                        firework.setVelocity(direction.getDirectionVector(spawnPoint).multiply(getSpread()));
+                        velocity = direction.getDirectionVector(spawnPoint.getPosition()).multiply(getSpread());
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + direction);
                 }
             }
-            buildEffectAndDetonate(firework);
+            buildEffectAndSchedule(tick + spawnPoint.getTickDelay(), spawn, velocity);
         }
     }
 
@@ -84,6 +88,12 @@ public class BurstRocket extends ColoredRocket {
         BurstDirection burstDirection = resolvingMap.getValue("direction", s -> BurstDirection.valueOf(s.toUpperCase()));
 
         return new BurstRocket(height, spread, burstDirection, colors.toArray(new Color[0]), fadeColors.toArray(new Color[0]), flicker, spawn);
+    }
 
+    @Override
+    public String getDescription() {
+        return super.getDescription() + C.NEW_LINE
+                + "Spread: " + spread
+                + "Burst direction: " + direction.toString();
     }
 }

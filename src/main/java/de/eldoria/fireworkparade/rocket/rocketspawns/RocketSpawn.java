@@ -6,6 +6,6 @@ import org.bukkit.util.Vector;
 import java.util.List;
 
 public interface RocketSpawn extends ConfigurationSerializable {
-    public List<Vector> getSpawnPoints();
+    public List<SpawnData> getSpawnPoints();
 }
 

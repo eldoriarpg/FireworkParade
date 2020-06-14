@@ -19,8 +19,8 @@ public class SingleSpawn implements RocketSpawn {
     }
 
     @Override
-    public List<Vector> getSpawnPoints() {
-        return Collections.singletonList(offset);
+    public List<SpawnData> getSpawnPoints() {
+        return Collections.singletonList(new SpawnData(offset, 0));
     }
 
     @NotNull
@@ -29,7 +29,7 @@ public class SingleSpawn implements RocketSpawn {
         return SerializationUtil.newBuilder().add("offset", offset).build();
     }
 
-    public static SingleSpawn deserialize(Map<String, Object> map){
+    public static SingleSpawn deserialize(Map<String, Object> map) {
         TypeResolvingMap resolvingMap = SerializationUtil.mapOf(map);
         Vector offset = resolvingMap.getValue("offset");
         return new SingleSpawn(offset);

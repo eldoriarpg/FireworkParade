@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ImageLib {
-    private Map<String, ParticleMap> particleMaps = new HashMap<>();
+    private final Map<String, ParticleMap> particleMaps = new HashMap<>();
     private final ImageMapper imageMapper;
-    private ExecutorService executorService = Executors.newCachedThreadPool();
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public ImageLib(Plugin plugin) {
         imageMapper = new ImageMapper(plugin);

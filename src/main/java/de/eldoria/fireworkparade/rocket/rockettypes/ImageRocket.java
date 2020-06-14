@@ -2,6 +2,7 @@ package de.eldoria.fireworkparade.rocket.rockettypes;
 
 import de.eldoria.fireworkparade.FireworkParade;
 import de.eldoria.fireworkparade.listener.ParticleMap;
+import de.eldoria.fireworkparade.rocket.RocketType;
 import de.eldoria.fireworkparade.util.SerializationUtil;
 import de.eldoria.fireworkparade.util.TypeResolvingMap;
 import lombok.Getter;
@@ -17,13 +18,18 @@ public class ImageRocket extends Rocket implements ConfigurationSerializable {
     private final ParticleMap map;
 
     public ImageRocket(int height, ParticleMap map) {
-        super(height);
+        super(height, RocketType.IMAGE);
         this.map = map;
     }
 
     @Override
-    public void detonate(Location location) {
-        map.spawnMap(location.add(0, getHeight(), 0));
+    public void detonate(int tick, Location location) {
+        if (map == null) {
+            FireworkParade.getInstance().getLogger().warning("Image is missing for rocket.");
+            return;
+        }
+
+        FireworkParade.getScheduler().scheduleImage(tick, location.add(0, getHeight(), 0), map);
     }
 
     @Override
@@ -39,5 +45,10 @@ public class ImageRocket extends Rocket implements ConfigurationSerializable {
         ParticleMap particleMap = FireworkParade.getImageLib().getParticleMap(resolvingMap.getValue("name"));
         int height = resolvingMap.getValue("height");
         return new ImageRocket(height, particleMap);
+    }
+
+    @Override
+    public String getDescription() {
+        return "Image: " + map.getName();
     }
 }

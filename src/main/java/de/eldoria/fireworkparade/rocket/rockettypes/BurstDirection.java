@@ -5,7 +5,6 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public enum BurstDirection {
     INSIDE(getInside()),
