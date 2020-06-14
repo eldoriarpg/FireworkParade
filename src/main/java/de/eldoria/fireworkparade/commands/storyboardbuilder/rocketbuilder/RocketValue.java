@@ -1,4 +1,4 @@
-package de.eldoria.fireworkparade.commands.rocketbuilder;
+package de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder;
 
 public enum RocketValue {
     IMAGE,
@@ -8,5 +8,5 @@ public enum RocketValue {
     SPREAD,
     BURST_DIRECTION,
     SPAWN,
-    DONE;
+    DONE
 }

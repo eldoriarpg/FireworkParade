@@ -1,4 +1,4 @@
-package de.eldoria.fireworkparade.commands.rocketbuilder;
+package de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder;
 
 import de.eldoria.fireworkparade.rocket.RocketType;
 import de.eldoria.fireworkparade.rocket.rocketspawns.RadiusSpawn;
@@ -7,6 +7,7 @@ import de.eldoria.fireworkparade.rocket.rocketspawns.SingleSpawn;
 import de.eldoria.fireworkparade.rocket.rocketspawns.SpawnForm;
 import de.eldoria.fireworkparade.rocket.rockettypes.ColoredRocket;
 import de.eldoria.fireworkparade.rocket.rockettypes.Rocket;
+import de.eldoria.fireworkparade.util.ColorUtil;
 import org.bukkit.Color;
 import org.bukkit.util.Vector;
 
@@ -76,7 +77,7 @@ public class ColoredRocketBuilder extends RocketBuilder {
         List<Color> colors = new ArrayList<>();
         for (String arg : args) {
             if (arg.length() == 1) {
-                Color color = parseColor(arg.charAt(0));
+                Color color = ColorUtil.parseColor(arg.charAt(0));
                 if (color == null) return false;
                 colors.add(color);
             }
@@ -90,7 +91,7 @@ public class ColoredRocketBuilder extends RocketBuilder {
         List<Color> fadeColors = new ArrayList<>();
         for (String arg : args) {
             if (arg.length() == 1) {
-                Color color = parseColor(arg.charAt(0));
+                Color color = ColorUtil.parseColor(arg.charAt(0));
                 if (color == null) return false;
                 fadeColors.add(color);
             }
@@ -155,43 +156,5 @@ public class ColoredRocketBuilder extends RocketBuilder {
 
         this.spawn = RadiusSpawn.newSpawn(spawnForm, count, radius);
         return true;
-    }
-
-    private Color parseColor(char color) {
-        switch (color) {
-            case '0':
-                return Color.fromBGR(0x000000);
-            case '1':
-                return Color.fromBGR(0x0000AA);
-            case '2':
-                return Color.fromBGR(0x00AA00);
-            case '3':
-                return Color.fromBGR(0x00AAAA);
-            case '4':
-                return Color.fromBGR(0xAA0000);
-            case '5':
-                return Color.fromBGR(0xAA00AA);
-            case '6':
-                return Color.fromBGR(0xFFAA00);
-            case '7':
-                return Color.fromBGR(0xAAAAAA);
-            case '8':
-                return Color.fromBGR(0x555555);
-            case '9':
-                return Color.fromBGR(0x5555FF);
-            case 'a':
-                return Color.fromBGR(0x55FF55);
-            case 'b':
-                return Color.fromBGR(0x55FFFF);
-            case 'c':
-                return Color.fromBGR(0xFF5555);
-            case 'd':
-                return Color.fromBGR(0xFF55FF);
-            case 'e':
-                return Color.fromBGR(0xFFFF55);
-            case 'f':
-                return Color.fromBGR(0xFFFFFF);
-        }
-        return null;
     }
 }

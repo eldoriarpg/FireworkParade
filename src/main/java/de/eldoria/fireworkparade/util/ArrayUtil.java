@@ -80,6 +80,7 @@ public class ArrayUtil {
      * @return list of strings which starts with the provided value
      */
     public static Stream<String> startingWithInArray(String value, String[] array) {
+        if (value.isEmpty()) return Arrays.stream(array);
         return Arrays.stream(array).filter(e -> e.toLowerCase().startsWith(value.toLowerCase()));
     }
 

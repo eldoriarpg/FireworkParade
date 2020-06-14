@@ -34,7 +34,7 @@ public final class SerializationUtil {
         return new TypeResolvingMap(serialized);
     }
 
-    public final static class Builder {
+    public static final class Builder {
         private final Map<String, Object> serialized = new LinkedHashMap<>();
 
         public Builder add(String key, Object value) {

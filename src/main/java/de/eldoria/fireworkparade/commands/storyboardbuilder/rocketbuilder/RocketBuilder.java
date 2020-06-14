@@ -1,7 +1,7 @@
-package de.eldoria.fireworkparade.commands.rocketbuilder;
+package de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder;
 
 import de.eldoria.fireworkparade.MessageSender;
-import de.eldoria.fireworkparade.commands.C;
+import de.eldoria.fireworkparade.util.C;
 import de.eldoria.fireworkparade.rocket.RocketType;
 import de.eldoria.fireworkparade.rocket.rockettypes.Rocket;
 import net.kyori.text.TextComponent;

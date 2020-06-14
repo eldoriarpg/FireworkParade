@@ -1,11 +1,12 @@
-package de.eldoria.fireworkparade.commands;
+package de.eldoria.fireworkparade.commands.storyboardbuilder;
 
 import de.eldoria.fireworkparade.MessageSender;
-import de.eldoria.fireworkparade.commands.rocketbuilder.BurstRocketBuilder;
-import de.eldoria.fireworkparade.commands.rocketbuilder.ColoredRocketBuilder;
-import de.eldoria.fireworkparade.commands.rocketbuilder.ImageRocketBuilder;
-import de.eldoria.fireworkparade.commands.rocketbuilder.RocketBuilder;
-import de.eldoria.fireworkparade.commands.rocketbuilder.RocketValue;
+import de.eldoria.fireworkparade.util.C;
+import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.BurstRocketBuilder;
+import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.ColoredRocketBuilder;
+import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.ImageRocketBuilder;
+import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.RocketBuilder;
+import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.RocketValue;
 import de.eldoria.fireworkparade.rocket.RocketType;
 import de.eldoria.fireworkparade.rocket.storyboard.RocketStage;
 import de.eldoria.fireworkparade.rocket.storyboard.RocketStoryboard;
@@ -15,10 +16,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StoryboardCreator {
+public final class StoryboardCreator {
 
     private final String name;
-    private final int cooldown;
+    private final double cooldown;
     private StoryboardCreatorState state;
 
     private final Map<Integer, RocketStage> stages = new HashMap<>();
@@ -28,13 +29,19 @@ public class StoryboardCreator {
     private RocketBuilder currentRocket;
 
 
-    private StoryboardCreator(String name, int cooldown) {
+    private StoryboardCreator(String name, double cooldown) {
         this.name = name;
         this.cooldown = cooldown;
     }
 
-    public static StoryboardCreator newCreator(String name, int cooldown) {
+    public static StoryboardCreator newCreator(String name, double cooldown) {
         return new StoryboardCreator(name, cooldown);
+    }
+
+    public static StoryboardCreator newCreatorFromStoryboard(RocketStoryboard storyboard) {
+        StoryboardCreator creator = new StoryboardCreator(storyboard.getName(), storyboard.getCooldown());
+        storyboard.getStages().forEach(s -> creator.stages.put(s.getTicks(), s));
+        return creator;
     }
 
     public boolean isStageAlreadyDefined(int ticks) {
@@ -58,7 +65,7 @@ public class StoryboardCreator {
             case IMAGE:
                 currentRocket = new ImageRocketBuilder(height);
                 break;
-                //TODO implement rain
+            //TODO implement rain
             //case RAIN:
             //    break;
             case BURST:
@@ -126,6 +133,8 @@ public class StoryboardCreator {
 
         MessageSender.sendCommandSuggestion(player, "Add a new stage.", C.addStageCommand);
         MessageSender.sendCommandSuggestion(player, "Add a new rocket.", C.addRocketCommand);
+        MessageSender.sendCommandSuggestion(player, "Stage Info.", C.addRocketCommand);
+        MessageSender.sendCommandSuggestion(player, "Storyboard Info", C.addRocketCommand);
         MessageSender.sendCommandExecution(player, "Save storyboard.", C.saveCommand);
     }
 
@@ -145,5 +154,24 @@ public class StoryboardCreator {
 
     public Collection<RocketStage> getStages() {
         return stages.values();
+    }
+
+    public boolean hasStage(int ticks) {
+        return stages.containsKey(ticks);
+    }
+
+    public RocketStage getCurrentStage() {
+        return currentStage;
+    }
+
+    public void deleteStage(int ticks) {
+        if(currentStage.getTicks() == ticks){
+            currentStage = null;
+        }
+        stages.remove(ticks);
+    }
+
+    public void cancelStage() {
+        currentStage = null;
     }
 }
