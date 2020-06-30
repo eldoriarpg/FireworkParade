@@ -1,4 +1,4 @@
-package de.eldoria.fireworkparade.util;
+package de.eldoria.fireworkparade.util.serialization;
 
 import java.util.ArrayList;
 import java.util.Collection;
