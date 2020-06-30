@@ -10,8 +10,7 @@ public class ImageRocketBuilder extends RocketBuilder {
     private ParticleMap particleMap;
 
     public ImageRocketBuilder(int height) {
-        super(height, RocketType.IMAGE);
-        currentValue = RocketValue.IMAGE;
+        super(height, RocketType.IMAGE, RocketValue.IMAGE);
     }
 
     @Override

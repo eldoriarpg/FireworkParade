@@ -37,7 +37,7 @@ public class FireworkCommand implements TabExecutor {
 
         if ("give".equalsIgnoreCase(args[0])) {
             int amount = 1;
-            if (args.length > 1) {
+            if (args.length > 2) {
                 try {
                     amount = Integer.parseInt(args[2]);
                     if (amount > 64 || amount < 1) {
@@ -110,6 +110,7 @@ public class FireworkCommand implements TabExecutor {
                         .filter(n -> n.toLowerCase().startsWith(args[3].toLowerCase()))
                         .collect(Collectors.toList());
             }
+            return Collections.emptyList();
         }
 
         return ArrayUtil.startingWithInArray(args[0], new String[] {"give"}).collect(Collectors.toList());

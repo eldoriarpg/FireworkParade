@@ -43,6 +43,44 @@ public class ColorUtil {
         return null;
     }
 
+    public static Color parseColor(String color) {
+        switch (color.toLowerCase()) {
+            case "black":
+                return Color.fromRGB(0x000000);
+            case "dark_blue":
+                return Color.fromRGB(0x0000AA);
+            case "dark_green":
+                return Color.fromRGB(0x00AA00);
+            case "dark_aqua":
+                return Color.fromRGB(0x00AAAA);
+            case "dark_red":
+                return Color.fromRGB(0xAA0000);
+            case "dark_purple":
+                return Color.fromRGB(0xAA00AA);
+            case "gold":
+                return Color.fromRGB(0xFFAA00);
+            case "gray":
+                return Color.fromRGB(0xAAAAAA);
+            case "dark_gray":
+                return Color.fromRGB(0x555555);
+            case "blue":
+                return Color.fromRGB(0x5555FF);
+            case "green":
+                return Color.fromRGB(0x55FF55);
+            case "aqua":
+                return Color.fromRGB(0x55FFFF);
+            case "red":
+                return Color.fromRGB(0xFF5555);
+            case "light_purple":
+                return Color.fromRGB(0xFF55FF);
+            case "yellow":
+                return Color.fromRGB(0xFFFF55);
+            case "white":
+                return Color.fromRGB(0xFFFFFF);
+        }
+        return null;
+    }
+
     public static String colorToString(Color color) {
         switch (color.asRGB()) {
             case 0x000000:

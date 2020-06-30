@@ -9,6 +9,8 @@ public final class C {
     public static String removeStageCommand = "/fpc removeStage";
     public static String removeRocketCommand = "/fpc removeRocket";
     public static String saveCommand = "/fpc save";
+    public static String stageInfo = "/fpc stageInfo";
+    public static String storyboardInfo = "/fpc storyboardInfo";
     public static String cancelRocketCommand = "/fpc cancelRocket";
     public static String cancelStageCommand = "/fpc cancelStage";
     public static String cancelCommand = "/fpc cancel";

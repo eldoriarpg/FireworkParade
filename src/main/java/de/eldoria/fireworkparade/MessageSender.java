@@ -3,7 +3,9 @@ package de.eldoria.fireworkparade;
 import net.kyori.text.TextComponent;
 import net.kyori.text.adapter.bukkit.TextAdapter;
 import net.kyori.text.event.ClickEvent;
+import net.kyori.text.format.Style;
 import net.kyori.text.format.TextColor;
+import net.kyori.text.format.TextDecoration;
 import org.bukkit.entity.Player;
 
 public final class MessageSender {
@@ -41,9 +43,8 @@ public final class MessageSender {
                 .content("[FP] ")
                 .build();
         TextComponent message = TextComponent.builder()
-                .color(TextColor.DARK_GREEN)
-                .clickEvent(ClickEvent.suggestCommand(command))
-                .content(text)
+                .content("[" + text + "]")
+                .style(Style.builder().color(TextColor.AQUA).clickEvent(ClickEvent.suggestCommand(command)).decoration(TextDecoration.UNDERLINED, true).build())
                 .build();
         TextComponent finalText = TextComponent.builder().append(prefix).append(message).build();
         TextAdapter.sendMessage(player, finalText);
@@ -55,9 +56,8 @@ public final class MessageSender {
                 .content("[FP] ")
                 .build();
         TextComponent message = TextComponent.builder()
-                .color(TextColor.DARK_GREEN)
-                .clickEvent(ClickEvent.runCommand(command))
-                .content(text)
+                .content("[" + text + "]")
+                .style(Style.builder().color(TextColor.AQUA).clickEvent(ClickEvent.runCommand(command)).decoration(TextDecoration.UNDERLINED, true).build())
                 .build();
         TextComponent finalText = TextComponent.builder().append(prefix).append(message).build();
         TextAdapter.sendMessage(player, finalText);

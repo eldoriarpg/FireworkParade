@@ -1,9 +1,9 @@
 package de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder;
 
 import de.eldoria.fireworkparade.MessageSender;
-import de.eldoria.fireworkparade.util.C;
 import de.eldoria.fireworkparade.rocket.RocketType;
 import de.eldoria.fireworkparade.rocket.rockettypes.Rocket;
+import de.eldoria.fireworkparade.util.C;
 import net.kyori.text.TextComponent;
 import net.kyori.text.format.TextColor;
 import org.bukkit.entity.Player;
@@ -13,9 +13,10 @@ public abstract class RocketBuilder {
     protected final RocketType type;
     protected RocketValue currentValue;
 
-    public RocketBuilder(int height, RocketType type) {
+    public RocketBuilder(int height, RocketType type, RocketValue initialState) {
         this.height = height;
         this.type = type;
+        currentValue = initialState;
     }
 
     public abstract boolean setValue(String[] value);
@@ -40,7 +41,7 @@ public abstract class RocketBuilder {
                 MessageSender.sendCommandSuggestion(player, "Please provide one or more colors.", C.addValueCommand);
                 break;
             case FADE_COLOR:
-                MessageSender.sendCommandSuggestion(player, "Please provide one or more fade colors.", C.addValueCommand);
+                MessageSender.sendCommandSuggestion(player, "Please provide fade colors or leave empty.", C.addValueCommand);
                 break;
             case FLICKER:
                 MessageSender.sendCommandSuggestion(player, "Should the rocket flicker or not.", C.addValueCommand);
@@ -56,10 +57,11 @@ public abstract class RocketBuilder {
                 break;
             case DONE:
                 MessageSender.sendMessage(player, "Rocket is created and saved.");
-                MessageSender.sendCommandSuggestion(player, "Add new Rocket.", C.addValueCommand);
-                MessageSender.sendCommandSuggestion(player, "Add new Stage.", C.addValueCommand);
-                MessageSender.sendCommandSuggestion(player, "Save.", C.addValueCommand);
-                break;
+                MessageSender.sendCommandSuggestion(player, "Add new Rocket.", C.addRocketCommand);
+                MessageSender.sendCommandSuggestion(player, "Add new Stage.", C.addStageCommand);
+                MessageSender.sendCommandExecution(player, "Save.", C.saveCommand);
+                return;
         }
+        MessageSender.sendCommandExecution(player, "Cancel rocket creation.", C.cancelRocketCommand);
     }
 }

@@ -55,7 +55,7 @@ public class FireworkParade extends JavaPlugin {
         saveDefaultConfig();
         storyboardLib = new StoryboardLib(this, imageLib);
         getCommand("fireworkparade").setExecutor(new FireworkCommand(storyboardLib));
-        getCommand("fireworkcreator").setExecutor(new CreateFireworkCommand(storyboardLib));
+        getCommand("fireworkcreator").setExecutor(new CreateFireworkCommand(storyboardLib, imageLib));
         Bukkit.getPluginManager().registerEvents(new StartListener(storyboardLib, this), this);
 
         //generateExampleRocket();
