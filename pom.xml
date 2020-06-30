@@ -18,6 +18,35 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.3</version>
+                <!-- Do not include the <configuration>...</configuration> part if you are using Sponge! -->
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>de.eldoria.fireworkparade.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.kyori</pattern>
+                            <shadedPattern>de.eldoria.fireworkparade.kyori</shadedPattern>
+                            <excludes>
+                                <exlude>com.google.*</exlude>
+                            </excludes>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -61,17 +90,39 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>16.0.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>text-api</artifactId>
             <version>3.0.3</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>text-adapter-bukkit</artifactId>
             <version>3.0.5</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
+                <exclusion>  <!-- declare the exclusion here -->
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
