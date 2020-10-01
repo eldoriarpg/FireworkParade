@@ -8,12 +8,14 @@ import de.eldoria.fireworkparade.rocket.rocketspawns.SpawnForm;
 import de.eldoria.fireworkparade.rocket.rockettypes.ColoredRocket;
 import de.eldoria.fireworkparade.rocket.rockettypes.Rocket;
 import de.eldoria.fireworkparade.util.ColorUtil;
+import lombok.Getter;
 import org.bukkit.Color;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class ColoredRocketBuilder extends RocketBuilder {
 
     protected Color[] colors;
@@ -22,8 +24,7 @@ public class ColoredRocketBuilder extends RocketBuilder {
     protected RocketSpawn spawn;
 
     protected ColoredRocketBuilder(int height, RocketType type) {
-        super(height, type);
-        currentValue = RocketValue.COLOR;
+        super(height, type, RocketValue.COLOR);
     }
 
     public static ColoredRocketBuilder newRocketBuilder(int height, RocketType type) {
@@ -44,7 +45,7 @@ public class ColoredRocketBuilder extends RocketBuilder {
                 return success;
             case FLICKER:
                 success = setFlicker(value);
-                if (success) currentValue = RocketValue.FLICKER;
+                if (success) currentValue = RocketValue.SPAWN;
                 return success;
             case SPAWN:
                 success = setSpawn(value);
@@ -74,14 +75,17 @@ public class ColoredRocketBuilder extends RocketBuilder {
 
 
     protected boolean setColors(String[] args) {
+        if (args.length == 0) return false;
         List<Color> colors = new ArrayList<>();
         for (String arg : args) {
+            Color color;
             if (arg.length() == 1) {
-                Color color = ColorUtil.parseColor(arg.charAt(0));
-                if (color == null) return false;
-                colors.add(color);
+                color = ColorUtil.parseColor(arg.charAt(0));
+            } else {
+                color = ColorUtil.parseColor(arg);
             }
-            return false;
+            if (color == null) return false;
+            colors.add(color);
         }
         this.colors = colors.toArray(new Color[0]);
         return true;
@@ -90,12 +94,14 @@ public class ColoredRocketBuilder extends RocketBuilder {
     protected boolean setFadeColors(String[] args) {
         List<Color> fadeColors = new ArrayList<>();
         for (String arg : args) {
+            Color color;
             if (arg.length() == 1) {
-                Color color = ColorUtil.parseColor(arg.charAt(0));
-                if (color == null) return false;
-                fadeColors.add(color);
+                color = ColorUtil.parseColor(arg.charAt(0));
+            } else {
+                color = ColorUtil.parseColor(arg);
             }
-            return false;
+            if (color == null) return false;
+            fadeColors.add(color);
         }
         this.fadeColors = fadeColors.toArray(new Color[0]);
         return true;

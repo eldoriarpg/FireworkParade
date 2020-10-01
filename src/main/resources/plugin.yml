@@ -1,9 +1,13 @@
 name: FireworkParade
-main: de.eldoria.fireworkfun.FireworkParade
+main: de.eldoria.fireworkparade.FireworkParade
 version: 1.0-BETA
 api-version: 1.13
 commands:
-  fireworkfun:
-    usage: <firework name>
+  fireworkparade:
+    aliases:
+      - fp
     description: Get a defined firework
     permission: fireworkfun.give
+  fireworkcreator:
+    aliases:
+      - fpc

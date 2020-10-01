@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,5 +57,12 @@ public class ImageLib {
             return;
         }
         executorService.execute(() -> particleMaps.get(image).spawnMap(location));
+    }
+
+    public List<String> getMatchingImages(String string) {
+        if (string.isEmpty()) return new ArrayList<>(particleMaps.keySet());
+        return particleMaps.keySet().stream()
+                .filter(s -> s.toLowerCase().startsWith(string.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }

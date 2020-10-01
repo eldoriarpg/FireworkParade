@@ -1,8 +1,8 @@
 package de.eldoria.fireworkparade.rocket.rocketspawns;
 
 import de.eldoria.fireworkparade.util.C;
-import de.eldoria.fireworkparade.util.SerializationUtil;
-import de.eldoria.fireworkparade.util.TypeResolvingMap;
+import de.eldoria.fireworkparade.util.serialization.SerializationUtil;
+import de.eldoria.fireworkparade.util.serialization.TypeResolvingMap;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.jetbrains.annotations.NotNull;
 

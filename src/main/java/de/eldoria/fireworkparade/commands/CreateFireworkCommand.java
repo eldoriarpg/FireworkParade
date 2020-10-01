@@ -3,18 +3,18 @@ package de.eldoria.fireworkparade.commands;
 import de.eldoria.fireworkparade.FireworkParade;
 import de.eldoria.fireworkparade.MessageSender;
 import de.eldoria.fireworkparade.commands.storyboardbuilder.StoryboardCreator;
+import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.ColoredRocketBuilder;
 import de.eldoria.fireworkparade.commands.storyboardbuilder.rocketbuilder.RocketValue;
+import de.eldoria.fireworkparade.listener.ImageLib;
 import de.eldoria.fireworkparade.listener.StoryboardLib;
 import de.eldoria.fireworkparade.rocket.RocketType;
+import de.eldoria.fireworkparade.rocket.rocketspawns.RadiusSpawn;
+import de.eldoria.fireworkparade.rocket.rocketspawns.RocketSpawn;
+import de.eldoria.fireworkparade.rocket.rocketspawns.SingleSpawn;
 import de.eldoria.fireworkparade.rocket.rocketspawns.SpawnForm;
 import de.eldoria.fireworkparade.rocket.rockettypes.BurstDirection;
-import de.eldoria.fireworkparade.rocket.rockettypes.Rocket;
 import de.eldoria.fireworkparade.rocket.storyboard.RocketStage;
 import de.eldoria.fireworkparade.util.ArrayUtil;
-import net.kyori.text.TextComponent;
-import net.kyori.text.event.ClickEvent;
-import net.kyori.text.event.HoverEvent;
-import net.kyori.text.format.TextColor;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +38,15 @@ public class CreateFireworkCommand implements TabExecutor {
     private final Map<UUID, StoryboardCreator> creatorMap = new HashMap<>();
     private final Logger logger = FireworkParade.getInstance().getLogger();
     private final StoryboardLib storyboardLib;
+    private final ImageLib imageLib;
 
-    public CreateFireworkCommand(StoryboardLib storyboardLib) {
+    private static final String[] COLORS = {"black", "dark_blue", "dark_green", "dark_aqua", "dark_red",
+            "dark_purple", "gold", "gray", "dark_gray", "blue",
+            "green", "aqua", "red", "light_purple", "yellow", "white"};
+
+    public CreateFireworkCommand(StoryboardLib storyboardLib, ImageLib imageLib) {
         this.storyboardLib = storyboardLib;
+        this.imageLib = imageLib;
     }
 
     @Override
@@ -67,6 +73,8 @@ public class CreateFireworkCommand implements TabExecutor {
                     return true;
                 }
 
+                RocketValue lastState = creator.getCurrentRocketState();
+
                 boolean success = creator.setRocketValue(values);
 
                 if (!success) {
@@ -74,6 +82,45 @@ public class CreateFireworkCommand implements TabExecutor {
                     return true;
                 }
 
+
+                switch (lastState) {
+                    case IMAGE:
+                        MessageSender.sendMessage(player, "Image set to §3" + String.join(" ", values));
+                        break;
+                    case COLOR:
+                        MessageSender.sendMessage(player, "Color set to §3" + String.join(", ", values));
+                        break;
+                    case FADE_COLOR:
+                        if (values.length == 0) {
+                            MessageSender.sendMessage(player, "No fade colors set.");
+                        } else {
+                            MessageSender.sendMessage(player, "Fade colors set to §3" + String.join(", ", values));
+                        }
+                        break;
+                    case FLICKER:
+                        MessageSender.sendMessage(player, "Rocket flicker set to §3" + values[0]);
+                        break;
+                    case SPREAD:
+                        MessageSender.sendMessage(player, "Spread set to §3" + values[0]);
+                        break;
+                    case BURST_DIRECTION:
+                        MessageSender.sendMessage(player, "Burst direction set to §3" + values[0].toLowerCase());
+                        break;
+                    case SPAWN:
+                        if (creator.getCurrentRocket() instanceof ColoredRocketBuilder) {
+                            ColoredRocketBuilder currentRocket = (ColoredRocketBuilder) creator.getCurrentRocket();
+                            RocketSpawn spawn = currentRocket.getSpawn();
+                            if (spawn instanceof SingleSpawn) {
+                                MessageSender.sendMessage(player, "New §3center spawn created");
+                            }
+                            if (spawn instanceof RadiusSpawn) {
+                                MessageSender.sendMessage(player, "New §3"
+                                        + ((RadiusSpawn) spawn).getSpawnForm().name().toLowerCase()
+                                        + "§r spawn created");
+                            }
+                        }
+                        break;
+                }
 
                 if (creator.getCurrentRocketState() == RocketValue.DONE) {
                     creator.sendStateMessage(player);
@@ -110,13 +157,17 @@ public class CreateFireworkCommand implements TabExecutor {
                 }
 
                 if (creator.isStageAlreadyDefined(ticks)) {
-                    creator.newStage(ticks);
-                    MessageSender.sendMessage(player, "This stage is already defined. You can now add more rockets.");
+                    creator.getOrCreateStage(ticks);
+                    MessageSender.sendMessage(player, "Selected stage §3" + ticks + "§r.");
+                    creator.getCurrentStage().sendStageInfo(player);
+                    creator.sendStateMessage(player);
+                    return true;
                 }
 
-                creator.newStage(ticks);
-                MessageSender.sendMessage(player, "Stage " + ticks + " created.");
+                creator.getOrCreateStage(ticks);
+                MessageSender.sendMessage(player, "Stage §3" + ticks + "§2 created.");
                 creator.sendStateMessage(player);
+                return true;
             }
 
             if ("addRocket".equalsIgnoreCase(cmd)) {
@@ -150,7 +201,7 @@ public class CreateFireworkCommand implements TabExecutor {
                     MessageSender.sendError(player, "Invalid rocket type");
                     return true;
                 }
-
+                MessageSender.sendMessage(player, "Creating a new " + type.toString().toLowerCase() + " rocket.");
                 creator.newRocket(height, type).sendStateMessage(player);
                 return true;
             }
@@ -204,7 +255,7 @@ public class CreateFireworkCommand implements TabExecutor {
             }
 
             if ("save".equals(cmd)) {
-                storyboardLib.addStoryboard(creator.build());
+                storyboardLib.addStoryboard(creatorMap.remove(player.getUniqueId()).build());
                 storyboardLib.save();
                 MessageSender.sendMessage(player, "Storyboard was saved.");
                 return true;
@@ -237,27 +288,8 @@ public class CreateFireworkCommand implements TabExecutor {
             }
 
             if ("storyboardInfo".equalsIgnoreCase(cmd)) {
-                List<RocketStage> stages = new ArrayList<>(creator.getStages());
-                stages.sort(Comparator.comparingInt(RocketStage::getTicks));
-                List<TextComponent> textComponents = new ArrayList<>();
-                for (RocketStage stage : stages) {
-                    TextComponent stageTicks = TextComponent
-                            .builder(stage.getTicks() + " Ticks", TextColor.DARK_GREEN)
-                            .hoverEvent(HoverEvent.
-                                    showText(TextComponent
-                                            .builder(stage.getRockets().size() + " rockets", TextColor.GREEN)
-                                            .build()))
-                            .build();
-                    TextComponent select = TextComponent
-                            .builder(" [select]", TextColor.AQUA)
-                            .clickEvent(ClickEvent.runCommand("/fpc addStage " + stage.getTicks()))
-                            .build();
-                    TextComponent remove = TextComponent
-                            .builder(" [remove]", TextColor.RED)
-                            .clickEvent(ClickEvent.runCommand("/fpc removeStage " + stage.getTicks()))
-                            .build();
-                    MessageSender.sendTextComponents(player, stageTicks, select, remove);
-                }
+                creator.sendStoryboardInfo(player);
+                return true;
             }
 
             if ("stageInfo".equalsIgnoreCase(cmd)) {
@@ -266,49 +298,58 @@ public class CreateFireworkCommand implements TabExecutor {
                     MessageSender.sendError(player, "No current stage selected.");
                     return true;
                 }
-                int id = 0;
-                for (Rocket rocket : currentStage.getRockets()) {
-                    TextComponent rocketType = TextComponent
-                            .builder(rocket.getRocketType() + " rocket at height: " + rocket.getHeight(), TextColor.DARK_GREEN)
-                            .hoverEvent(HoverEvent.
-                                    showText(TextComponent
-                                            .builder(rocket.getDescription(), TextColor.GREEN)
-                                            .build()))
-                            .build();
-                    TextComponent remove = TextComponent
-                            .builder(" [remove]", TextColor.RED)
-                            .clickEvent(ClickEvent.runCommand("/fpc removeRocket " + id))
-                            .build();
-                    MessageSender.sendTextComponents(player, rocketType, remove);
-                    id++;
+                currentStage.sendStageInfo(player);
+                return true;
+            }
+
+            if ("changeStageTick".equalsIgnoreCase(cmd)) {
+                if (values.length != 1) {
+                    MessageSender.sendError(player, "Invalid input.");
+                    return true;
                 }
+                int ticks;
+                try {
+                    ticks = Integer.parseInt(values[0]);
+                    if (ticks < 0) {
+                        MessageSender.sendError(player, "Invalid tick value.");
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                    MessageSender.sendError(player, "Invalid tick value.");
+                    return true;
+                }
+                creator.getCurrentStage().setTicks(ticks);
+                return true;
             }
         }
 
-        if (values.length != 2) {
-            return true;
-        }
-
-        String name = values[0];
-        double cooldown;
-        try {
-            cooldown = Double.parseDouble(values[1]);
-        } catch (NumberFormatException e) {
-            MessageSender.sendError(player, "Invalid cooldown value");
-            return true;
-        }
+        String name = args[0];
 
         if (creatorMap.containsKey(player.getUniqueId())) {
             MessageSender.sendError(player, "You are already creating a rocket.");
             return true;
         }
         if (storyboardLib.exists(name)) {
-            MessageSender.sendMessage(player, "This rocket name is already in use. Storyboard loaded.");
+            MessageSender.sendMessage(player, "Storyboard loaded.");
             StoryboardCreator creator = StoryboardCreator.newCreatorFromStoryboard(storyboardLib.getStoryboard(name));
             creatorMap.put(player.getUniqueId(), creator);
+            creator.sendStoryboardInfo(player);
             creator.sendStateMessage(player);
             return true;
         }
+        if (args.length != 2) {
+            MessageSender.sendError(player, "Invalid input");
+            return true;
+        }
+
+        double cooldown;
+        try {
+            cooldown = Double.parseDouble(args[1]);
+        } catch (NumberFormatException e) {
+            MessageSender.sendError(player, "Invalid cooldown value");
+            return true;
+        }
+
         StoryboardCreator creator = StoryboardCreator.newCreator(name, cooldown);
         creatorMap.put(player.getUniqueId(), creator);
         MessageSender.sendMessage(player, "Storyboard creation started.");
@@ -327,22 +368,24 @@ public class CreateFireworkCommand implements TabExecutor {
             String subcommand = args[0];
             if ("setValue".equalsIgnoreCase(subcommand)) {
                 if (creator.getCurrentRocketState() == null) {
-                    return suggestions;
+                    return Collections.emptyList();
                 }
 
                 switch (creator.getCurrentRocketState()) {
                     case IMAGE:
                         if (args.length == 2) {
-                            suggestions.add("<imageName>");
+                            return imageLib.getMatchingImages(args[1]);
                         }
                         break;
                     case COLOR:
                     case FADE_COLOR:
-                        return Arrays.asList("§00", "§11", "§22", "§33", "§44", "§55", "§66", "§77", "§88", "§99",
-                                "§aa", "§bb", "§cc", "§dd", "§ee", "§ff");
+                        if (args.length > 1) {
+                            return ArrayUtil.startingWithInArray(args[args.length - 1], COLORS).collect(Collectors.toList());
+                        }
+                        return Collections.emptyList();
                     case FLICKER:
                         if (args.length == 2) {
-                            return Arrays.asList("true", "false");
+                            return ArrayUtil.startingWithInArray(args[1], new String[] {"true", "false"}).collect(Collectors.toList());
                         }
                         break;
                     case SPREAD:
@@ -352,19 +395,25 @@ public class CreateFireworkCommand implements TabExecutor {
                         break;
                     case BURST_DIRECTION:
                         if (args.length == 2) {
-                            suggestions.addAll(ArrayUtil.startingWithInArray(args[0], BurstDirection.asStringArray())
+                            suggestions.addAll(ArrayUtil.startingWithInArray(args[1], BurstDirection.asStringArray())
                                     .collect(Collectors.toList()));
                             return suggestions;
                         }
                         break;
                     case SPAWN:
+                        if (args.length == 1) return Collections.emptyList();
                         if ("center".equalsIgnoreCase(args[1])) {
                             suggestions.add("offset as <x,y,z>");
                             return suggestions;
                         }
-                        if (ArrayUtil.arrayContains(SpawnForm.asStringArray())) {
-                            suggestions.add("<radius> <count>");
-                            return suggestions;
+                        if (ArrayUtil.arrayContains(args[1], SpawnForm.asStringArray())) {
+                            if (args.length == 3) {
+                                return Collections.singletonList("<radius>");
+                            }
+                            if (args.length == 4) {
+                                return Collections.singletonList("<count>");
+                            }
+                            return Collections.emptyList();
                         }
                         String[] centers = (String[]) ArrayUtils.add(SpawnForm.asStringArray(), "CENTER");
                         return ArrayUtil.startingWithInArray(args[1], centers).collect(Collectors.toList());
@@ -375,18 +424,20 @@ public class CreateFireworkCommand implements TabExecutor {
             }
 
             if ("addStage".equalsIgnoreCase(subcommand)) {
-                suggestions.add("<ticks>");
+                if (args.length == 2) {
+                    suggestions.add("<ticks>");
+                }
                 return suggestions;
             }
 
             if ("addRocket".equalsIgnoreCase(subcommand)) {
                 if (args.length == 2) {
-                    suggestions.add("<height>");
+                    return Collections.singletonList("<height>");
                 } else if (args.length == 3) {
-                    suggestions.addAll(ArrayUtil.startingWithInArray(args[2], RocketType.asStringArray())
-                            .collect(Collectors.toList()));
+                    return ArrayUtil.startingWithInArray(args[2], RocketType.asStringArray())
+                            .collect(Collectors.toList());
                 }
-                return suggestions;
+                return Collections.emptyList();
             }
 
             if ("removeRocket".equalsIgnoreCase(subcommand)) {
@@ -405,52 +456,56 @@ public class CreateFireworkCommand implements TabExecutor {
             }
 
             if ("save".equalsIgnoreCase(subcommand)) {
-                return suggestions;
+                return Collections.emptyList();
             }
 
             if ("cancel".equalsIgnoreCase(subcommand)) {
-                return suggestions;
+                return Collections.emptyList();
             }
 
             if ("cancelRocket".equalsIgnoreCase(subcommand)) {
-                return suggestions;
+                return Collections.emptyList();
             }
 
             suggestions.add("storyboardInfo");
             suggestions.add("stageInfo");
 
             if (creator.getCurrentRocketState() != null) {
-                suggestions.add("setValue");
-                suggestions.add("cancelRocket");
-                suggestions.add("cancel");
-                return suggestions;
+                if (args.length == 1) {
+                    return ArrayUtil.startingWithInArray(subcommand, new String[] {"setValue", "cancelRocket", "cancel"}).collect(Collectors.toList());
+                }
+                return Collections.emptyList();
             }
 
             if (creator.isStageDefined()) {
-                suggestions.add("addStage");
-                suggestions.add("addRocket");
-                suggestions.add("removeRocket");
-                suggestions.add("RemoveStage");
-                suggestions.add("save");
-                suggestions.add("cancel");
-                return suggestions;
+                if (args.length == 1) {
+                    return ArrayUtil.startingWithInArray(subcommand, new String[] {"changeStageTick", "addStage", "addRocket", "removeRocket", "removeStage", "save", "cancel"}).collect(Collectors.toList());
+                }
+                return Collections.emptyList();
             }
 
             if (creator.getStages().isEmpty()) {
-                suggestions.add("addStage");
-                suggestions.add("addRocket");
-                suggestions.add("cancel");
-                return suggestions;
+                if (args.length == 1) {
+                    return ArrayUtil.startingWithInArray(subcommand, new String[] {"addStage", "addRocket", "cancel"}).collect(Collectors.toList());
+                }
+                return Collections.emptyList();
             }
 
         } else {
             if (args.length >= 1) {
                 if (storyboardLib.exists(args[0])) {
-                    suggestions.add("This name is already in use.");
+                    return Collections.singletonList("This name is already in use. Press enter to edit.");
                 }
             }
-            suggestions.add("<rocketname> <cooldown>");
+            if (args.length == 1) {
+                List<String> matchingStoryboard = storyboardLib.getMatchingStoryboard(args[0]);
+                matchingStoryboard.add("<rocketname>");
+                return matchingStoryboard;
+            }
+            if (args.length == 2) {
+                return Collections.singletonList("<cooldown>");
+            }
         }
-        return suggestions;
+        return Collections.emptyList();
     }
 }

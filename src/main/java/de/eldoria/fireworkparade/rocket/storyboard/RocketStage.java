@@ -1,14 +1,21 @@
 package de.eldoria.fireworkparade.rocket.storyboard;
 
-import de.eldoria.fireworkparade.FireworkParade;
+import de.eldoria.fireworkparade.MessageSender;
 import de.eldoria.fireworkparade.rocket.rockettypes.Rocket;
-import de.eldoria.fireworkparade.util.SerializationUtil;
-import de.eldoria.fireworkparade.util.TypeResolvingMap;
+import de.eldoria.fireworkparade.util.serialization.SerializationUtil;
+import de.eldoria.fireworkparade.util.serialization.TypeResolvingMap;
 import lombok.Getter;
-import org.bukkit.Bukkit;
+import lombok.Setter;
+import net.kyori.text.TextComponent;
+import net.kyori.text.event.ClickEvent;
+import net.kyori.text.event.HoverEvent;
+import net.kyori.text.format.Style;
+import net.kyori.text.format.TextColor;
+import net.kyori.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -22,7 +29,8 @@ import java.util.Map;
 @Getter
 public class RocketStage implements ConfigurationSerializable {
     private final List<Rocket> rockets;
-    private final int ticks;
+    @Setter
+    private int ticks;
 
     private RocketStage(List<Rocket> rockets, int ticks) {
         this.rockets = rockets;
@@ -62,5 +70,25 @@ public class RocketStage implements ConfigurationSerializable {
 
     public void removeRocket(int id) {
         rockets.remove(id);
+    }
+
+    public void sendStageInfo(Player p){
+        int id = 0;
+        for (Rocket rocket : getRockets()) {
+            TextComponent rocketType = TextComponent
+                    .builder(rocket.getRocketType() + " rocket at height: " + rocket.getHeight(), TextColor.DARK_GREEN)
+                    .hoverEvent(HoverEvent.
+                            showText(TextComponent
+                                    .builder(rocket.getDescription(), TextColor.GREEN)
+                                    .build()))
+                    .build();
+            TextComponent remove = TextComponent
+                    .builder("[remove]")
+                    .style(Style.builder().color(TextColor.RED).clickEvent(ClickEvent.runCommand("/fpc removeRocket " + id)).decoration(TextDecoration.UNDERLINED, true).build())
+                    .build();
+            MessageSender.sendTextComponents(p, rocketType, TextComponent.builder(" ").build(), remove);
+            id++;
+        }
+
     }
 }

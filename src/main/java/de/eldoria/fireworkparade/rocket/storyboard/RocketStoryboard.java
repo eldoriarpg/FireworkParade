@@ -1,7 +1,7 @@
 package de.eldoria.fireworkparade.rocket.storyboard;
 
-import de.eldoria.fireworkparade.util.SerializationUtil;
-import de.eldoria.fireworkparade.util.TypeResolvingMap;
+import de.eldoria.fireworkparade.util.serialization.SerializationUtil;
+import de.eldoria.fireworkparade.util.serialization.TypeResolvingMap;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;

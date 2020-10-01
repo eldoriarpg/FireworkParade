@@ -34,10 +34,23 @@ public class ArrayUtil {
      */
     public boolean arrayContains(String[] strings, String... values) {
         for (String string : strings) {
-            for (String contain : values) {
-                if (string.equalsIgnoreCase(contain)) return true;
-            }
+            if (arrayContains(string, values)) return true;
         }
+        return false;
+    }
+
+    /**
+     * Checks if a array contains any of the values.
+     *
+     * @param string string to check
+     * @param values one or more value to check agains
+     * @return true if a match was found
+     */
+    public boolean arrayContains(String string, String... values) {
+        for (String contain : values) {
+            if (string.equalsIgnoreCase(contain)) return true;
+        }
+
         return false;
     }
 
